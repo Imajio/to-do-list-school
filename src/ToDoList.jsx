@@ -1,11 +1,20 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import { FaArrowCircleUp } from "react-icons/fa";
 import { FaArrowCircleDown } from "react-icons/fa";
 
 export default function ToDoList() {
 
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState(() => {
+        //on page load , load all ls tasks
+        const savedTasks = localStorage.getItem('tasks');
+        return savedTasks ? JSON.parse(savedTasks) : [];
+    });
     const [newTask, setNewTask] = useState("");
+
+    //useEffect listens of 'tasks' array, and changes ls, when array changes 
+    useEffect(() => {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }, [tasks]);
 
     function handleInputChange(event){
         setNewTask(event.target.value);
@@ -34,12 +43,7 @@ export default function ToDoList() {
             setTasks(updatedTasks);
         }
     }
-    function handlerEnter(event){
-        if((newTask.trim() !== "") && (event.key === "Enter")){
-            setTasks(t => [...t, newTask]);
-            setNewTask("");
-        }
-    }
+    function handlerEnter(event){if(event.key === "Enter"){addTask();}}
     return (
         <div className='to-do-list'>
             <h1>To Do List</h1>

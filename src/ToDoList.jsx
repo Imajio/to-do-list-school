@@ -10,6 +10,9 @@ export default function ToDoList() {
         return savedTasks ? JSON.parse(savedTasks) : [];
     });
     const [newTask, setNewTask] = useState("");
+    const [textColor, setTextColor] = useState("#000000"); // Цвет текста по умолчанию
+    const [backgroundColor, setBackgroundColor] = useState("#ffffff"); // Цвет фона по умолчанию
+
 
     //useEffect listens of 'tasks' array, and changes ls, when array changes 
     useEffect(() => {
@@ -21,7 +24,12 @@ export default function ToDoList() {
     }
     function addTask(){
         if(newTask.trim() !== ""){
-            setTasks(t => [...t, newTask]);
+            const task = {
+                text: newTask,
+                textColor: textColor,
+                backgroundColor: backgroundColor
+            };
+            setTasks(t => [...t, task]);
             setNewTask("");
         }
     }
@@ -44,24 +52,39 @@ export default function ToDoList() {
         }
     }
     function handlerEnter(event){if(event.key === "Enter"){addTask();}}
+
     return (
         <div className='to-do-list'>
             <h1>To Do List</h1>
 
             <div className='input-div'>
                 <input className='inputt' type='text' placeholder='Enter a task...' value={newTask} onChange={handleInputChange} onKeyDown={handlerEnter}/>
-                <button className='add-button' onClick={addTask}>Add</button>
+                <div className='buttons'>
+                    <input
+                        type="color"
+                        className='textcolor'
+                        value={textColor}
+                        onChange={(e) => setTextColor(e.target.value)}
+                    />
+                    <input
+                        type="color"
+                        className='backgroundcolor'
+                        value={backgroundColor}
+                        onChange={(e) => setBackgroundColor(e.target.value)}
+                    />
+                    <button className='add-button' onClick={addTask}>Add</button>
+                </div>
             </div>
 
             <ol>
-                {tasks.map((task, index) =>
-                    <li key={index}>
-                        <span className='text'>{task}</span>
+                {tasks.map((task, index) => (
+                    <li key={index} style={{ backgroundColor: task.backgroundColor }}>
+                        <span className='text' style={{ color: task.textColor }}>{task.text}</span>
                         <button className='delete-button' onClick={() => deleteTask(index)}>Delete</button>
-                        <button className='move-button' onClick={() => moveTaskUp(index)}><FaArrowCircleUp/></button>
-                        <button className='move-button' onClick={() => moveTaskDown(index)}><FaArrowCircleDown/></button>
+                        <button className='move-button' onClick={() => moveTaskUp(index)}><FaArrowCircleUp /></button>
+                        <button className='move-button' onClick={() => moveTaskDown(index)}><FaArrowCircleDown /></button>
                     </li>
-                )}
+                ))}
             </ol>
         </div>
     );
